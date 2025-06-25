@@ -77,7 +77,7 @@ public class UserService {
         dto.setModifiedDate(user.getModifiedDate());
         return dto;
     }
-    // 회원정보 수정
+    // 회원정보 수정 추가
     @Transactional
     public UserResponseDto updateUser(Long userId, UserUpdateRequestDto request) {
         User user = userRepository.findById(userId)
