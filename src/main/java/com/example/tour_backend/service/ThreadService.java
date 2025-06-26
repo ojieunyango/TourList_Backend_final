@@ -5,10 +5,12 @@ import com.example.tour_backend.domain.thread.ThreadRepository;
 import com.example.tour_backend.domain.user.User;
 import com.example.tour_backend.domain.user.UserRepository;
 import com.example.tour_backend.dto.thread.ThreadDto;
+import com.example.tour_backend.dto.thread.ThreadUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -85,4 +87,21 @@ public class ThreadService {
                 })
                 .collect(Collectors.toList());
     }
+    @Transactional // 게시글 수정
+    // 추추가 (메서드 게시글 수정위해 추가
+    public Thread updateThread(Long id, ThreadUpdateRequestDto dto) {
+        Thread thread = threadRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다."));
+
+        // 수정 가능 필드만 변경
+        thread.setTitle(dto.getTitle());
+        thread.setContent(dto.getContent());
+        thread.setAuthor(dto.getAuthor());
+        thread.setPdfPath(dto.getPdfPath());
+        thread.setArea(dto.getArea());
+        thread.setModifiedDate(LocalDateTime.now());
+
+        return threadRepository.save(thread);
+    }
+
 }
