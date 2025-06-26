@@ -111,5 +111,29 @@ public class ThreadService {
 
         return threadRepository.save(thread);
     }
+    // 게시물 검색 기능 추추추추가
+    @Transactional(readOnly = true)
+    public List<ThreadDto> searchThreads(String keyword) {
+        List<Thread> threads = threadRepository.findByTitleContainingOrContentContaining(keyword, keyword);
+
+        return threads.stream().map(thread -> {
+            ThreadDto dto = new ThreadDto();
+            // dto 필드 세팅
+            dto.setThreadId(thread.getThreadId());
+            dto.setUserId(thread.getUser().getUserId());
+            dto.setTitle(thread.getTitle());
+            dto.setContent(thread.getContent());
+            dto.setAuthor(thread.getAuthor());
+            dto.setCount(thread.getCount());
+            dto.setHeart(thread.getHeart());
+            dto.setPdfPath(thread.getPdfPath());
+            dto.setCommentCount(thread.getCommentCount());
+            dto.setArea(thread.getArea());
+            dto.setCreateDate(thread.getCreateDate());
+            dto.setModifiedDate(thread.getModifiedDate());
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
 
 }

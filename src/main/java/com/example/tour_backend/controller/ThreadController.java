@@ -64,6 +64,12 @@ public class ThreadController {
 
         return ResponseEntity.ok(responseDto);
     }
+    @GetMapping("/search") // 게시글 검색 기능 추추추추가
+    public ResponseEntity<List<ThreadDto>> searchThreads(@RequestParam String keyword) {
+        List<ThreadDto> results = threadService.searchThreads(keyword);
+        return ResponseEntity.ok(results);
+    }
+
 
 
 }
