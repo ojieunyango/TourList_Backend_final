@@ -87,6 +87,14 @@ public class ThreadService {
                 })
                 .collect(Collectors.toList());
     }
+
+    @Transactional // 게시글 삭제 (추추추가)
+    public void deleteThread(Long id) {
+        Thread thread = threadRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다."));
+        threadRepository.delete(thread);
+    }
+
     @Transactional // 게시글 수정
     // 추추가 (메서드 게시글 수정위해 추가
     public Thread updateThread(Long id, ThreadUpdateRequestDto dto) {

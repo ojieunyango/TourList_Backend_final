@@ -34,6 +34,12 @@ public class ThreadController {
         return ResponseEntity.ok(threads);
 
     }
+    @DeleteMapping("/{id}") // 게시글 삭제 (추추추가)
+    public ResponseEntity<Void> deleteThread(@PathVariable Long id) {
+        threadService.deleteThread(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @PutMapping("/{id}") // 게시물 수정(PUT /api/thread/{id} 엔드포인트 추가) 추추가
     public ResponseEntity<ThreadDto> updateThread(
             @PathVariable Long id,
