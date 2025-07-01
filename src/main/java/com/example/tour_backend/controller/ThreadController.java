@@ -5,6 +5,7 @@ import com.example.tour_backend.dto.thread.ThreadDto;
 import com.example.tour_backend.dto.thread.ThreadUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import com.example.tour_backend.service.ThreadService;
 
@@ -85,6 +86,20 @@ public class ThreadController {
             return ResponseEntity.notFound().build();
         }
     }
+    // 게시물에 현재 좋아요 누른 사용자 호출 7/1
+    @GetMapping("/{id}/like-status")
+    public ResponseEntity<ThreadDto> getThread(
+            @PathVariable Long id,
+            @RequestParam Long userId
+    ) {
+        ThreadDto dto = threadService.getThreadById(id, userId);
+        return ResponseEntity.ok(dto);
+    }
+    // 인증없이 간단하게 구현하기위해 userId를 @RequestParam 또는 @RequestBody 로 받는 방식 사용
+    // 추후 보안상의 이유로 JwtAuthenticationFilter 구현 필요하다면 (JWT)
+    // - 필터에서 CustomUserDetails 생성 → SecurityContextHolder에 저장하는 방식으로 바꾸어야함
+
+
 
 
 

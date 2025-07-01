@@ -8,6 +8,7 @@ import com.example.tour_backend.domain.user.User;
 import com.example.tour_backend.domain.user.UserRepository;
 import com.example.tour_backend.dto.thread.ThreadDto;
 import com.example.tour_backend.dto.thread.ThreadUpdateRequestDto;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+
 public class ThreadService {
     private final ThreadRepository threadRepository;
     private final UserRepository userRepository;
@@ -161,6 +163,7 @@ public class ThreadService {
         // 조회수 증가
         thread.setCount(thread.getCount() + 1);
 
+
         // 변경사항 저장
         threadRepository.save(thread);
 
@@ -182,21 +185,27 @@ public class ThreadService {
         dto.setArea(thread.getArea());
         dto.setCreateDate(thread.getCreateDate());
         dto.setModifiedDate(thread.getModifiedDate());
+
+
+
         return dto;
     }
-    @Transactional // 좋아요 토글 메서드 추가 (수정함)
+    @Transactional // 좋아요 토글 메서드 추가 7/1
     public ThreadDto toggleLike(Long threadId, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("사용자 없음"));
         Thread thread = threadRepository.findById(threadId)
                 .orElseThrow(() -> new RuntimeException("게시글 없음"));
-
+// 7/1
         Optional<ThreadLike> existingLike = threadLikeRepository.findByUserAndThread(user, thread);
+
+        boolean liked;
 
         if (existingLike.isPresent()) {
             // 이미 좋아요 누른 상태 → 취소
             threadLikeRepository.delete(existingLike.get());
             thread.setHeart(thread.getHeart() - 1);
+            liked = false;
         } else {
             // 좋아요 추가
             ThreadLike like = new ThreadLike();
@@ -204,13 +213,59 @@ public class ThreadService {
             like.setThread(thread);
             threadLikeRepository.save(like);
             thread.setHeart(thread.getHeart() + 1);
+            liked = true;
         }
 
         threadRepository.save(thread);
-        return convertToDto(thread); // 기존에 만든 DTO 변환 메서드 활용
+
+
+        return ThreadDto.builder()
+                .threadId(thread.getThreadId())
+                .userId(thread.getUser().getUserId())
+                .title(thread.getTitle())
+                .content(thread.getContent())
+                .author(thread.getAuthor())
+                .count(thread.getCount())
+                .heart(thread.getHeart())
+                .pdfPath(thread.getPdfPath())
+                .commentCount(thread.getCommentCount())
+                .area(thread.getArea())
+                .createDate(thread.getCreateDate())
+                .modifiedDate(thread.getModifiedDate())
+                .likedByCurrentUser(liked) // 토글 후 상태를 명확히 반환
+                .build();
     }
+    // 게시글에 현재 좋아요 누른 사용자 저장 7/1
+    public ThreadDto getThreadById(Long threadId, Long userId) {
+        Thread thread = threadRepository.findById(threadId)
+                .orElseThrow(() -> new RuntimeException("게시글이 없습니다."));
+        // ✅ 조회수 증가
+        thread.setCount(thread.getCount() + 1);
+        threadRepository.save(thread);
 
 
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
+        //  좋아요 눌렀는지 여부 계산
+        boolean liked = threadLikeRepository.existsByUserAndThread(user, thread);
+
+        //  응답 DTO 생성 시 liked 상태도 포함
+        return ThreadDto.builder()
+                .threadId(thread.getThreadId())
+                .userId(thread.getUser().getUserId())
+                .title(thread.getTitle())
+                .content(thread.getContent())
+                .author(thread.getAuthor())
+                .count(thread.getCount())
+                .heart(thread.getHeart())
+                .pdfPath(thread.getPdfPath())
+                .commentCount(thread.getCommentCount())
+                .area(thread.getArea())
+                .createDate(thread.getCreateDate())
+                .modifiedDate(thread.getModifiedDate())
+                .likedByCurrentUser(liked)
+                .build();
+    }
 
 }
