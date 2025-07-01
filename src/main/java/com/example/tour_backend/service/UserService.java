@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,14 +43,15 @@ public class UserService {
         if (userRepository.findByEmail(requestDto.getEmail()).isPresent()) {
             throw new RuntimeException("이미 존재하는 이메일입니다.");
         }
-        // 닉네임 중복 체크
+        // 사용자명 중복 체크
+        if (userRepository.findByUsername(requestDto.getUsername()).isPresent()) {
+            throw new RuntimeException("이미 존재하는 사용자명입니다.");
+        }
         if (userRepository.findByNickname(requestDto.getNickname()).isPresent()) {
             throw new RuntimeException("이미 존재하는 닉네임입니다.");
         }
-        // 사용자명 중복 체크
-        if (userRepository.findByName(requestDto.getName()).isPresent()) {
-            throw new RuntimeException("이미 존재하는 사용자명입니다.");
-        }
+
+
 
 
         // 비밀번호 암호화해서 저장

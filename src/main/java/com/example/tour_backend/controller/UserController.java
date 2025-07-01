@@ -18,13 +18,16 @@ public class UserController {
     // 회원가입
     @PostMapping("/register")
     public ResponseEntity<UserResponseDto> registerUser(@RequestBody UserRequestDto requestDto) {
-        try {
-            UserResponseDto responseDto = userService.registerUser(requestDto);
-            return ResponseEntity.ok(responseDto);
-        } catch (RuntimeException e) {
-            // 에러 처리 개선
-            return ResponseEntity.badRequest().build();
-        }
+//        try {
+//            UserResponseDto responseDto = userService.registerUser(requestDto);
+//            return ResponseEntity.ok(responseDto);
+//        } catch (RuntimeException e) {
+//            // 에러 처리 개선
+//           return ResponseEntity.badRequest().build();
+//
+//        }
+        UserResponseDto responseDto = userService.registerUser(requestDto);
+        return ResponseEntity.ok(responseDto);
     }
 
     // 회원 조회 (마이페이지 등)
@@ -65,15 +68,7 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-//    @GetMapping("/username/{username}")
-//    public ResponseEntity<Long> getUserIdByUsername(@PathVariable String username) {
-//        Long userId = userService.findUserIdByUsername(username);  // username으로 userId 찾기
-//        if (userId != null) {
-//            return ResponseEntity.ok(userId);  // userId가 존재하면 반환
-//        } else {
-//            return ResponseEntity.status(404).body(null);  // userId가 없으면 404 반환
-//        }
-//    }
+
 
     @GetMapping("/username/{username}")
     public ResponseEntity<Long> getUserIdByUsername(@PathVariable String username) {
